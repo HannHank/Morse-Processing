@@ -15,7 +15,8 @@ final static Map<Character, String> map = new HashMap();
 
 
 void setup(){
-   fullScreen();
+   size(1200, 900);
+   //fullScreen();
    background(100,100,100);
   
    drawOriginText(example);
