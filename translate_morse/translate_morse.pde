@@ -7,18 +7,22 @@ import java.util.*;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import java.awt.datatransfer.DataFlavor;
+import processing.sound.*;
 
 String OriginText = "";
 String transText = "";
 
 final static Map<Character, String> map = new HashMap();
-
-
+boolean _play = false;
+SinOsc  osc;
+float freq=440;
+char currentChar;
+String transTextCp = "";
 void setup(){
-   size(1200, 900);
-   //fullScreen();
+   fullScreen();
    background(100,100,100);
-  
+   osc = new SinOsc(this);
+   osc.freq(freq);
    drawOriginText(example);
    for (String[] pair : code)
             map.put(pair[0].charAt(0), pair[1].trim());
@@ -53,14 +57,66 @@ void draw(){
   rect(140,height/2,100,50);
   fill(255,255,255);
   text("Copy",160,height/2 + 30);
+  fill(0,0,0);
+  rect(260,height/2,100,50);
+  fill(255,255,255);
+  text("Play",290,height/2 + 30);
   drawOriginText(OriginText);
   drawTransText(transText);
     
 }
 
-void mousePressed() {
+void play(){
+  int interval = 100;
+  
+  for (char letter : transTextCp.toCharArray())
+  {
+   currentChar = letter;
+   transText += str(letter);
+   osc.play();
+   if(letter == '-'){
+     osc.play();
+     delay(3*interval);
+     osc.stop();
+     delay(interval);
+   }else if(letter == '.'){
+       osc.play();
+       delay(interval);
+       osc.stop();
+       delay(interval);
+   }else if(letter == '/'){
+       // after each word
+       delay(7*interval);
+       
+   }else if(letter == ' '){
+      // after each character
+       delay(3*interval);
+   
+   }
+   else{
+       print("character not found: " + letter);
+   }
+   if(!_play){
+     break;
+   }
+   
+  
+  }
+}
+
+void mouseReleased() {
   if(mouseX >= 20 && mouseY >= height/2 && mouseX <= 120 && mouseY <= height/2 + 50){
     translateToMorse(OriginText);
+  }
+  if(mouseX >= 260 && mouseY >= height/2 && mouseX <= 360 && mouseY <= height/2 + 50){
+    if(!_play){ 
+    transTextCp = transText;
+    transText = "";
+    }
+   
+    _play = !_play;
+    thread("play");
+  
   }
   if(mouseX >= 140 && mouseY >= height/2 && mouseX <= 240 && mouseY <= height/2 + 50){
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -106,7 +162,7 @@ void translateToMorse(String input){
   }
   
   drawTransText(transText);
-
+ 
  
   
 }
