@@ -73,7 +73,7 @@ void play(){
   {
    currentChar = letter;
    transText += str(letter);
-   osc.play();
+  
    if(letter == '-'){
      osc.play();
      delay(3*interval);
@@ -102,6 +102,7 @@ void play(){
    
   
   }
+  osc.stop();
 }
 
 void mouseReleased() {
